@@ -18,3 +18,17 @@ This repository was systematically updated to transition the core forecasting pi
 To validate the predictive power of the refactored hybrid model, a formal risk management suite was integrated to translate volatility forecasts into actionable metrics:
 * Generates daily **95% and 99% Parametric Value at Risk (VaR)** thresholds using dynamic predicted conditional standard deviations ($\hat{\sigma}_{t+1}$).
 * Establishes the mathematical baseline for regulatory backtesting (such as the Kupiec Proportion of Failures coverage test) to analyze the frequency and independence of VaR exceptions during market stress.
+
+
+## 🧠 Model Architecture & Deep-Learning Pipeline
+
+To effectively capture both structural volatility clustering and non-linear regime shifts, this repository implements a two-stage hybrid time-series pipeline.
+
+### 1. Parametric Baseline Estimation (GARCH)
+The engine first fits a classical, mean-reverting GARCH(1,1) process to historical asset log returns. The conditional variance is modeled parametrically to capture long-term baseline volatility clustering and standard heteroskedasticity.
+
+### 2. Multi-Dimensional Feature Engineering
+Once the baseline parameters are calculated, the engine isolates the conditional variance and standardized residuals. These vectors are transformed using a rolling look-back window and shaped into multi-dimensional arrays matching deep recurrent sequence demands: `[Samples, Time_Steps, Features]`.
+
+### 3. Non-Linear Residual Tracking (LSTM)
+The engineered tensors are passed directly into a Long Short-Term Memory (LSTM) network architecture. While the GARCH baseline masters long-term variance reversion, the LSTM isolates latent, non-linear dependencies and structural regime shifts within the residual structures, providing an advanced toolkit optimized for risk mitigation and tail-hedging parameters.
