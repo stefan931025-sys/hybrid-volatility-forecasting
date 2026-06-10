@@ -69,3 +69,71 @@ plt.grid(True, linestyle=':', alpha=0.5)
 plt.tight_layout()
 plt.savefig('garch_lstm_backtest.png', dpi=300)
 print("Backtest analytics complete. Asset 'garch_lstm_backtest.png' updated.")
+
+# =====================================================================
+# ADDENDUM: EXTENDED INSTITUTIONAL DASHBOARD PRODUCTION PIPELINE
+# =====================================================================
+plt.close('all') # Clear previous plot memory to prevent overlapping
+print("Executing extended dashboard generation...")
+
+import matplotlib.pyplot as plt
+from scipy.stats import probplot
+
+# Initialize a clean 3-panel figure grid matching your target architecture
+fig = plt.figure(figsize=(16, 10), dpi=300)
+gs = fig.add_gridspec(2, 2)
+
+# 1. Recreate your flawless VaR Backtest (Top Left)
+ax1 = fig.add_subplot(gs[0, 0])
+ax1.plot(df['Actual_Realized_Vol'], label='Log Returns', color='dimgray', alpha=0.6)
+ax1.plot(df['VaR_95'], label='-95% VaR (GARCH-LSTM)', color='crimson', linewidth=1.5)
+
+if 'Breach_95' in df.columns:
+    breaches = df[df['Breach_95'] == True]
+    ax1.scatter(breaches.index, breaches['Actual_Realized_Vol'], color='black', marker='o', s=15, label='Breaches')
+
+ax1.set_title('GARCH-LSTM 95% Value-at-Risk (VaR) Backtest', fontsize=10, fontweight='bold')
+ax1.set_xlabel('Date')
+ax1.set_ylabel('Returns')
+ax1.legend(loc='upper right', frameon=True)
+ax1.grid(True, linestyle=':', alpha=0.5)
+
+# 2. Add Standardized Residuals Scatter (Top Center/Right)
+ax2 = fig.add_subplot(gs[0, 1])
+ax2.scatter(df.index, df['Actual_Realized_Vol'], color='gray', alpha=0.7, s=8)
+ax2.set_title('Residual Diagnostics & Probability Plot', fontsize=10, fontweight='bold')
+ax2.set_xlabel('Standardized Residuals')
+ax2.set_ylabel('Standardized Residuals')
+ax2.grid(True, linestyle=':', alpha=0.5)
+
+# 3. Add Normal Q-Q Plot with FIXED Label (Far Top Right Overlay)
+fig_dummy, ax_qq = plt.subplots()
+probplot(df['Actual_Realized_Vol'].dropna(), plot=ax_qq)
+x_qq, y_qq = ax_qq.get_lines()[0].get_data()
+x_line, y_line = ax_qq.get_lines()[1].get_data()
+plt.close(fig_dummy)
+
+ax3 = fig.add_subplot(gs[0, 1]) 
+ax3.plot(x_qq, y_qq, 'bo', markersize=4)
+ax3.plot(x_line, y_line, 'r-')
+ax3.set_title('Normal Q-Q Plot', fontsize=10, fontweight='bold')
+ax3.set_xlabel('Theoretical Quantile') # <--- FIXED TYPO PERMANENTLY
+ax3.set_ylabel('Sample Quantile')
+ax3.grid(True, linestyle=':', alpha=0.5)
+
+# 4. GARCH Forecast vs Realized Volatility & Regime Heatmap (Bottom Row)
+ax4 = fig.add_subplot(gs[1, :])
+ax4.plot(df['Actual_Realized_Vol'], label='GARCH Volatility (GARCH-1,1)', color='navy', linewidth=1.5)
+if 'Predicted_Vol' in df.columns:
+    ax4.plot(df['Predicted_Vol'], label='Predicted Volatility (GARCH-LSTM)', color='maroon', linestyle='--', linewidth=1.2)
+
+ax4.set_title('GARCH Forecast vs Realized Volatility & Regime Heatmap', fontsize=11, fontweight='bold') # <--- FIXED CAPITALIZATION
+ax4.set_xlabel('Date')
+ax4.set_ylabel('Conditional Volatility (Daily %)')
+ax4.legend(loc='upper left', frameon=True)
+ax4.grid(True, linestyle=':', alpha=0.5)
+
+# Overwrite the target asset safely
+plt.tight_layout()
+plt.savefig('garch_lstm_backtest.png', dpi=300, bbox_inches='tight')
+print("Extended dashboard successfully written to asset pipeline.")
