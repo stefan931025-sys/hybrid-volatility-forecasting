@@ -32,3 +32,17 @@ Once the baseline parameters are calculated, the engine isolates the conditional
 
 ### 3. Non-Linear Residual Tracking (LSTM)
 The engineered tensors are passed directly into a Long Short-Term Memory (LSTM) network architecture. While the GARCH baseline masters long-term variance reversion, the LSTM isolates latent, non-linear dependencies and structural regime shifts within the residual structures, providing an advanced toolkit optimized for risk mitigation and tail-hedging parameters.
+
+
+## 4. Production Orchestration & Stress-Testing Framework
+
+To operationalize the GARCH-LSTM forecasting pipeline for an institutional environment, the architecture was refactored into a modular, production-grade risk management suite.
+
+### Core Architecture Components:
+* **`run_pipeline.py` (Master Orchestrator):** Automates the end-to-end execution loop. It dynamic-links the data validation layer, tracks processing latency down to the millisecond, manages memory allocations, and isolates sequential failure points.
+* **`stress_test_simulation.py` (Fat-Tail Monte Carlo Engine):** Simulates 10,000 forward-looking return paths across a 30-day trading horizon. Rather than relying on restrictive standard normal distribution assumptions, the engine applies a heavy-tailed **Student's t-distribution** to scale random price shocks by the GARCH-LSTM conditional volatility forecast.
+* **Risk Metrics Evaluated:** Calculates a 99% parametric Value-at-Risk (VaR) alongside an integration-based 99% Expected Shortfall (ES) to accurately map tail-risk exposure during systemic regime shifts.
+
+```bash
+# To execute the full institutional production suite:
+python run_pipeline.py
