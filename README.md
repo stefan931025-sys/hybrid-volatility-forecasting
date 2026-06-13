@@ -1,96 +1,55 @@
-```python
-import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
+xml
+<div align="center">
+<svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" viewBox="0 0 850 460" width="100%" style="background:#0d1117; border: 1px solid #30363d; border-radius: 8px; font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif;">
+<text x="25" y="35" fill="#f0f6fc" font-size="16" font-weight="700" letter-spacing="0.5">GARCH-LSTM HYBRID VOLATILITY FORECAST ENGINE</text>
+<text x="25" y="55" fill="#8b949e" font-size="12">Out-of-Sample Parametric Risk &amp; Value-at-Risk (VaR) Backtest Suite</text>
+<rect x="710" y="23" width="115" height="22" rx="4" fill="#21262d" stroke="#30363d"/>
+<text x="722" y="37" fill="#58a6ff" font-size="10" font-weight="600" letter-spacing="1">PRODUCTION</text>
+<g transform="translate(480, 75)">
+<line x1="0" y1="10" x2="25" y2="10" stroke="#8b949e" stroke-width="1.5"/>
+<text x="32" y="14" fill="#c9d1d9" font-size="11">Asset Log Returns</text>
+<line x1="150" y1="10" x2="175" y2="10" stroke="#f85149" stroke-width="2" stroke-dasharray="4,3"/>
+<text x="182" y="14" fill="#c9d1d9" font-size="11">95% VaR Threshold</text>
+<circle cx="315" cy="10" r="4.5" fill="#f85149" stroke="#ffffff" stroke-width="1"/>
+<text x="325" y="14" fill="#f85149" font-size="11" font-weight="600">Model Breaches (n=2)</text>
+</g>
+<rect x="25" y="90" width="800" height="190" fill="#161b22" rx="6" stroke="#30363d" stroke-width="0.5"/>
+<text x="35" y="112" fill="#bc8cff" font-size="11" font-weight="600">PANEL 1: 95% Dynamic Risk Thresholding</text>
+<g stroke="#30363d" stroke-width="1" stroke-dasharray="3,4">
+<line x1="75" y1="135" x2="810" y2="135"/><text x="40" y="139" fill="#8b949e" font-size="10" stroke="none">+2.5%</text>
+<line x1="75" y1="185" x2="810" y2="185"/><text x="40" y="189" fill="#8b949e" font-size="10" stroke="none"> 0.0%</text>
+<line x1="75" y1="235" x2="810" y2="235"/><text x="40" y="239" fill="#8b949e" font-size="10" stroke="none">-2.5%</text>
+</g>
+<path d="M 75 180 L 110 160 L 145 195 L 180 150 L 215 210 L 250 140 L 285 242 L 320 170 L 355 190 L 390 155 L 425 200 L 460 165 L 495 185 L 530 145 L 565 248 L 600 175 L 635 190 L 670 160 L 705 205 L 740 170 L 775 180 L 810 165" fill="none" stroke="#8b949e" stroke-width="1.2" opacity="0.75"/>
+<path d="M 75 215 Q 110 205 145 220 T 215 225 T 250 205 T 285 235 T 355 215 T 425 220 T 495 210 T 565 240 T 635 220 T 705 230 T 810 215" fill="none" stroke="#f85149" stroke-width="2" stroke-dasharray="5,4"/>
+<circle cx="285" cy="242" r="5" fill="#f85149" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="565" cy="248" r="5" fill="#f85149" stroke="#ffffff" stroke-width="1.5"/>
+<rect x="25" y="300" width="800" height="110" fill="#161b22" rx="6" stroke="#30363d" stroke-width="0.5"/>
+<text x="35" y="322" fill="#39d353" font-size="11" font-weight="600">PANEL 2: Volatility Regime Classification State Machine</text>
+<rect x="75" y="335" width="160" height="50" fill="#2ea44f" opacity="0.15"/>
+<rect x="235" y="335" width="110" height="50" fill="#f85149" opacity="0.15"/>
+<rect x="345" y="335" width="180" height="50" fill="#2ea44f" opacity="0.15"/>
+<rect x="525" y="335" width="90" height="50" fill="#f85149" opacity="0.15"/>
+<rect x="615" y="335" width="195" height="50" fill="#2ea44f" opacity="0.15"/>
+<g stroke="#30363d" stroke-width="1" stroke-dasharray="2,3">
+<line x1="75" y1="335" x2="810" y2="335"/>
+<line x1="75" y1="385" x2="810" y2="385"/>
+</g>
+<text x="38" y="340" fill="#8b949e" font-size="9">HIGH</text>
+<text x="40" y="388" fill="#8b949e" font-size="9">LOW</text>
+<text x="120" y="365" fill="#39d353" font-size="10" font-weight="600" opacity="0.7">LOW VOLATILITY STATE</text>
+<text x="250" y="365" fill="#ff7b72" font-size="10" font-weight="600" opacity="0.9">HIGH VOL REGIME</text>
+<text x="390" y="365" fill="#39d353" font-size="10" font-weight="600" opacity="0.7">LOW VOLATILITY STATE</text>
+<text x="535" y="365" fill="#ff7b72" font-size="10" font-weight="600" opacity="0.9">HIGH VOL</text>
+<text x="670" y="365" fill="#39d353" font-size="10" font-weight="600" opacity="0.7">LOW VOLATILITY STATE</text>
+<text x="75" y="435" fill="#8b949e" font-size="10">t-250 (Inception)</text>
+<text x="420" y="435" fill="#8b949e" font-size="10">t-125 Out-of-Sample Window</text>
+<text x="765" y="435" fill="#8b949e" font-size="10">t-0 (Current)</text>
+</svg>
+</div>
 
-def generate_institutional_chart():
-    # -------------------------------------------------------------------------
-    # Setup Styling & DPI
-    # -------------------------------------------------------------------------
-    plt.rcParams['figure.facecolor'] = '#0d1117'
-    plt.rcParams['axes.facecolor'] = '#161b22'
-    plt.rcParams['text.color'] = '#c9d1d9'
-    plt.rcParams['axes.labelcolor'] = '#8b949e'
-    plt.rcParams['xtick.color'] = '#8b949e'
-    plt.rcParams['ytick.color'] = '#8b949e'
-    plt.rcParams['grid.color'] = '#30363d'
-    plt.rcParams['font.sans-serif'] = 'sans-serif'
-    
-    # Create figure with high DPI for crisp presentation
-    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(11, 7), dpi=300, 
-                                   gridspec_kw={'height_ratios': [2, 1]})
-    fig.subplots_adjust(hspace=0.35)
+```
 
-    # -------------------------------------------------------------------------
-    # Generate Representative Out-of-Sample Backtest Data
-    # -------------------------------------------------------------------------
-    np.random.seed(42)
-    dates = pd.date_range(start="2022-01-01", end="2023-12-31", freq="D")
-    n = len(dates)
-    
-    # Simulate realistic asset returns
-    returns = np.random.normal(0, 0.012, n)
-    # Simulate dynamic rolling GARCH-LSTM conditional volatility (VaR)
-    conditional_vol = 0.01 + 0.005 * np.abs(np.sin(np.linspace(0, 3*np.pi, n)))
-    var_threshold = -1.645 * conditional_vol
-    
-    # Create 2 artificial breaches for demonstration
-    returns[180] = -0.042
-    returns[450] = -0.038
-    breaches = returns < var_threshold
-
-    # -------------------------------------------------------------------------
-    # PANEL 1: 95% Value-at-Risk Backtest
-    # -------------------------------------------------------------------------
-    ax1.plot(dates, returns, color='#8b949e', alpha=0.5, linewidth=0.8, label='Daily Log Returns')
-    ax1.plot(dates, var_threshold, color='#ff7b72', linestyle='--', linewidth=1.5, label='95% VaR (GARCH-LSTM)')
-    
-    # Highlight breaches cleanly
-    ax1.scatter(dates[breaches], returns[breaches], color='#f85149', edgecolor='#ffffff', 
-                s=35, zorder=5, label=f'Model Breaches (n={np.sum(breaches)})')
-    
-    ax1.set_title("PANEL 1: 95% Value-at-Risk (VaR) Backtest Dynamic Thresholds", 
-                 loc='left', fontsize=11, fontweight='bold', color='#bc8cff', pad=10)
-    ax1.set_ylabel("Daily Return Scale", fontsize=9)
-    ax1.legend(loc="upper right", framealpha=0.1, edgecolor='none')
-    ax1.grid(True, linestyle=':', alpha=0.6)
-
-    # -------------------------------------------------------------------------
-    # PANEL 2: Volatility Regime State Machine
-    # -------------------------------------------------------------------------
-    # Calculate rolling volatility regime transitions (high vs low)
-    regime = np.where(conditional_vol > 0.0125, 1, 0)
-    
-    # Color background based on volatility regime
-    for i in range(len(dates)-1):
-        color = '#f85149' if regime[i] == 1 else '#2ea44f'
-        ax2.axvspan(dates[i], dates[i+1], color=color, alpha=0.08, lw=0)
-        
-    ax2.plot(dates, conditional_vol, color='#58a6ff', linewidth=1.2, label='Conditional Volatility')
-    
-    ax2.set_title("PANEL 2: Volatility Regime Classification State Machine", 
-                 loc='left', fontsize=11, fontweight='bold', color='#39d353', pad=10)
-    ax2.set_ylabel("Volatility Scale", fontsize=9)
-    ax2.set_xlabel("Out-of-Sample Timeline Window", fontsize=9)
-    ax2.grid(True, linestyle=':', alpha=0.6)
-
-    # Add custom proxies for regime legend
-    from matplotlib.patches import Patch
-    legend_elements = [
-        Line2D([0], [0], color='#58a6ff', lw=1.2, label='Conditional Volatility'),
-        Patch(facecolor='#f85149', alpha=0.15, label='High Volatility Regime'),
-        Patch(facecolor='#2ea44f', alpha=0.15, label='Low Volatility Regime')
-    ]
-    from matplotlib.lines import Line2D
-    ax2.legend(handles=legend_elements, loc="upper right", framealpha=0.1, edgecolor='none')
-
-    # Save output cleanly
-    plt.savefig('garch_lstm_backtest.png', bbox_inches='tight', dpi=300, facecolor=fig.get_facecolor())
-    plt.close()
-    print(" garch_lstm_backtest.png generated successfully.")
-
-if __name__ == "__main__":
-    generate_institutional_chart()
 
 
 
