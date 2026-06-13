@@ -1,52 +1,6 @@
-xml
-<div align="center">
-<svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" viewBox="0 0 850 460" width="100%" style="background:#0d1117; border: 1px solid #30363d; border-radius: 8px; font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif;">
-<text x="25" y="35" fill="#f0f6fc" font-size="16" font-weight="700" letter-spacing="0.5">GARCH-LSTM HYBRID VOLATILITY FORECAST ENGINE</text>
-<text x="25" y="55" fill="#8b949e" font-size="12">Out-of-Sample Parametric Risk &amp; Value-at-Risk (VaR) Backtest Suite</text>
-<rect x="710" y="23" width="115" height="22" rx="4" fill="#21262d" stroke="#30363d"/>
-<text x="722" y="37" fill="#58a6ff" font-size="10" font-weight="600" letter-spacing="1">PRODUCTION</text>
-<g transform="translate(480, 75)">
-<line x1="0" y1="10" x2="25" y2="10" stroke="#8b949e" stroke-width="1.5"/>
-<text x="32" y="14" fill="#c9d1d9" font-size="11">Asset Log Returns</text>
-<line x1="150" y1="10" x2="175" y2="10" stroke="#f85149" stroke-width="2" stroke-dasharray="4,3"/>
-<text x="182" y="14" fill="#c9d1d9" font-size="11">95% VaR Threshold</text>
-<circle cx="315" cy="10" r="4.5" fill="#f85149" stroke="#ffffff" stroke-width="1"/>
-<text x="325" y="14" fill="#f85149" font-size="11" font-weight="600">Model Breaches (n=2)</text>
-</g>
-<rect x="25" y="90" width="800" height="190" fill="#161b22" rx="6" stroke="#30363d" stroke-width="0.5"/>
-<text x="35" y="112" fill="#bc8cff" font-size="11" font-weight="600">PANEL 1: 95% Dynamic Risk Thresholding</text>
-<g stroke="#30363d" stroke-width="1" stroke-dasharray="3,4">
-<line x1="75" y1="135" x2="810" y2="135"/><text x="40" y="139" fill="#8b949e" font-size="10" stroke="none">+2.5%</text>
-<line x1="75" y1="185" x2="810" y2="185"/><text x="40" y="189" fill="#8b949e" font-size="10" stroke="none"> 0.0%</text>
-<line x1="75" y1="235" x2="810" y2="235"/><text x="40" y="239" fill="#8b949e" font-size="10" stroke="none">-2.5%</text>
-</g>
-<path d="M 75 180 L 110 160 L 145 195 L 180 150 L 215 210 L 250 140 L 285 242 L 320 170 L 355 190 L 390 155 L 425 200 L 460 165 L 495 185 L 530 145 L 565 248 L 600 175 L 635 190 L 670 160 L 705 205 L 740 170 L 775 180 L 810 165" fill="none" stroke="#8b949e" stroke-width="1.2" opacity="0.75"/>
-<path d="M 75 215 Q 110 205 145 220 T 215 225 T 250 205 T 285 235 T 355 215 T 425 220 T 495 210 T 565 240 T 635 220 T 705 230 T 810 215" fill="none" stroke="#f85149" stroke-width="2" stroke-dasharray="5,4"/>
-<circle cx="285" cy="242" r="5" fill="#f85149" stroke="#ffffff" stroke-width="1.5"/>
-<circle cx="565" cy="248" r="5" fill="#f85149" stroke="#ffffff" stroke-width="1.5"/>
-<rect x="25" y="300" width="800" height="110" fill="#161b22" rx="6" stroke="#30363d" stroke-width="0.5"/>
-<text x="35" y="322" fill="#39d353" font-size="11" font-weight="600">PANEL 2: Volatility Regime Classification State Machine</text>
-<rect x="75" y="335" width="160" height="50" fill="#2ea44f" opacity="0.15"/>
-<rect x="235" y="335" width="110" height="50" fill="#f85149" opacity="0.15"/>
-<rect x="345" y="335" width="180" height="50" fill="#2ea44f" opacity="0.15"/>
-<rect x="525" y="335" width="90" height="50" fill="#f85149" opacity="0.15"/>
-<rect x="615" y="335" width="195" height="50" fill="#2ea44f" opacity="0.15"/>
-<g stroke="#30363d" stroke-width="1" stroke-dasharray="2,3">
-<line x1="75" y1="335" x2="810" y2="335"/>
-<line x1="75" y1="385" x2="810" y2="385"/>
-</g>
-<text x="38" y="340" fill="#8b949e" font-size="9">HIGH</text>
-<text x="40" y="388" fill="#8b949e" font-size="9">LOW</text>
-<text x="120" y="365" fill="#39d353" font-size="10" font-weight="600" opacity="0.7">LOW VOLATILITY STATE</text>
-<text x="250" y="365" fill="#ff7b72" font-size="10" font-weight="600" opacity="0.9">HIGH VOL REGIME</text>
-<text x="390" y="365" fill="#39d353" font-size="10" font-weight="600" opacity="0.7">LOW VOLATILITY STATE</text>
-<text x="535" y="365" fill="#ff7b72" font-size="10" font-weight="600" opacity="0.9">HIGH VOL</text>
-<text x="670" y="365" fill="#39d353" font-size="10" font-weight="600" opacity="0.7">LOW VOLATILITY STATE</text>
-<text x="75" y="435" fill="#8b949e" font-size="10">t-250 (Inception)</text>
-<text x="420" y="435" fill="#8b949e" font-size="10">t-125 Out-of-Sample Window</text>
-<text x="765" y="435" fill="#8b949e" font-size="10">t-0 (Current)</text>
-</svg>
-</div>
+## 📊 Backtest Analytics Dashboard
+
+![GARCH-LSTM Backtest](https://quickchart.io/chart?bkg=%230d1117&c=%7Btype%3A%27line%27%2Cdata%3A%7Blabels%3A%5B1%2C2%2C3%2C4%2C5%2C6%2C7%2C8%2C9%2C10%5D%2Cdatasets%3A%5B%7Blabel%3A%27Returns%27%2Cdata%3A%5B0.5%2C-1.2%2C0.8%2C-2.3%2C1.1%2C-0.5%2C-3.1%2C0.9%2C-0.2%2C-1.8%5D%2CborderColor%3A%27%238b949e%27%2Cfill%3Afalse%7D%2C%7Blabel%3A%2795%25%20VaR%27%2Cdata%3A%5B-1.5%2C-1.6%2C-1.8%2C-2.0%2C-2.1%2C-2.2%2C-2.3%2C-2.4%2C-2.4%2C-2.5%5D%2CborderColor%3A%27%23f85149%27%2CborderDash%3A%5B5%2C5%5D%2Cfill%3Afalse%7D%5D%7D%2Coptions%3A%7Blegend%3A%7Blabels%3A%7BfontColor%3A%27%23c9d1d9%27%7D%7D%7D%7D)
 
 ```
 
