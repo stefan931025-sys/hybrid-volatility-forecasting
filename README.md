@@ -2,12 +2,6 @@
 
 ![GARCH-LSTM Backtest](https://quickchart.io/chart?bkg=%230d1117&c=%7Btype%3A%27line%27%2Cdata%3A%7Blabels%3A%5B1%2C2%2C3%2C4%2C5%2C6%2C7%2C8%2C9%2C10%5D%2Cdatasets%3A%5B%7Blabel%3A%27Returns%27%2Cdata%3A%5B0.5%2C-1.2%2C0.8%2C-2.3%2C1.1%2C-0.5%2C-3.1%2C0.9%2C-0.2%2C-1.8%5D%2CborderColor%3A%27%238b949e%27%2Cfill%3Afalse%7D%2C%7Blabel%3A%2795%25%20VaR%27%2Cdata%3A%5B-1.5%2C-1.6%2C-1.8%2C-2.0%2C-2.1%2C-2.2%2C-2.3%2C-2.4%2C-2.4%2C-2.5%5D%2CborderColor%3A%27%23f85149%27%2CborderDash%3A%5B5%2C5%5D%2Cfill%3Afalse%7D%5D%7D%2Coptions%3A%7Blegend%3A%7Blabels%3A%7BfontColor%3A%27%23c9d1d9%27%7D%7D%7D%7D)
 
-```
-
-
-
-
-
 # Hybrid Volatility Forecasting 
 
 ## 🛠️ Institutional Audit & Quantitative Refactoring
