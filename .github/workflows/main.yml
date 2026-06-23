@@ -17,6 +17,8 @@ jobs:
       - name: Checkout Code Repository
         uses: actions/checkout@v3
         with:
+          repository: stefan931025-sys/hybrid-volatility-forecasting
+          ref: main
           fetch-depth: 0
 
       - name: Configure Cloud Python Environment
@@ -36,5 +38,3 @@ jobs:
           LINKEDIN_PERSON_URN: ${{ secrets.LINKEDIN_PERSON_URN }}
         run: |
           python master_pipeline.py
-
-
