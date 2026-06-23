@@ -1,6 +1,7 @@
 name: Quantamental Pipeline Automation
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -35,4 +36,5 @@ jobs:
           LINKEDIN_PERSON_URN: ${{ secrets.LINKEDIN_PERSON_URN }}
         run: |
           python master_pipeline.py
+
 
