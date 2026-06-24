@@ -27,11 +27,12 @@ jobs:
       - name: Install Quant & Core Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install numpy pandas scikit-learn tensorflow arch matplotlib requests GitPython
+          pip install numpy pandas scikit-learn tensorflow arch matplotlib requests GitPython yfinance scipy
 
-      - name: Execute Analytical Model & LinkedIn Engine
+      - name: Execute Automated Ingestion & Analytics Engine
         env:
           LINKEDIN_OAUTH_TOKEN: ${{ secrets.LINKEDIN_OAUTH_TOKEN }}
           LINKEDIN_PERSON_URN: ${{ secrets.LINKEDIN_PERSON_URN }}
         run: |
+          python src/data_ingestion.py
           python run_pipeline.py
