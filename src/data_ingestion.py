@@ -5,21 +5,20 @@ import yfinance as yf
 def fetch_market_data():
     print("[SYSTEM INFO] Initializing Automated Data Ingestion Layer...")
     
-    # Define a cross-asset universe: Equities, Fixed Income, Commodities, FX
-    ticker_universe = {
-        "SPY": "S&P 500 Index (Equities)",
-        "TLT": "20+ Year Treasury Bond ETF (Fixed Income)",
-        "GLD": "Gold Trust (Safe Haven Commodity)",
-        "USO": "United States Oil Fund (Energy/Macro)",
-        "EEM": "MSCI Emerging Markets ETF (Macro Risk Asset)"
-    }
+    # Cleaned, highly-liquid macro assets: S&P500, Long-bonds, Gold, Crude Oil, Emerging Markets
+    tickers = ["SPY", "TLT", "GLD", "USO", "EEM"]
     
-    tickers = list(ticker_universe.keys())
-    
-    # Download 5 years of daily adjusted closing prices
     print(f"[DATA INFRA] Fetching historical data for: {tickers}")
-    data = yf.download(tickers, period="5y", interval="1d")['Adj Close']
     
+    # Download 5 years of daily data
+    raw_data = yf.download(tickers, period="5y", interval="1d")
+    
+    # Clean extraction method that works across all multi-ticker structures
+    if 'Adj Close' in raw_data.columns.levels[0]:
+        data = raw_data['Adj Close']
+    else:
+        data = raw_data['Close']
+        
     # Check for missing values and forward-fill
     data = data.ffill().dropna()
     
