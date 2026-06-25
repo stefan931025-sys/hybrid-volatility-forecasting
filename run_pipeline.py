@@ -27,10 +27,10 @@ def fetch_market_data():
     return data
 
 # ==========================================
-# 2. BLACK-LETTERMAN PORTFOLIO OPTIMIZER
+# 2. BLACK-LITTERMAN PORTFOLIO OPTIMIZER
 # ==========================================
 def run_black_litterman(df):
-    print("\n[STEP 2] Initializing Black-Litterman Optimization Engine...")
+    print("\n[STEP 2] Executing Black-Litterman Matrix Allocator...")
     returns = df.pct_change().dropna()
     
     num_assets = len(df.columns)
@@ -59,9 +59,7 @@ def run_black_litterman(df):
         first_term = np.linalg.inv(inv_tau_Sigma + P.T @ inv_Omega @ P)
         second_term = inv_tau_Sigma @ Pi + P.T @ inv_Omega @ Q
         E_R = first_term @ second_term
-        print(f"[MATH SUCCESS] Adjusted Expected Returns: {E_R}")
     except np.linalg.LinAlgError:
-        print("[ERROR] Matrix inversion failed. Defaulting to historical parameters.")
         E_R = returns.mean().to_numpy() * 252
         
     def portfolio_variance(weights):
@@ -79,12 +77,13 @@ def run_black_litterman(df):
     })
     weights_df.to_csv("output/bl_optimized_weights.csv", index=False)
     print("[SUCCESS] Optimized weights saved to output/bl_optimized_weights.csv")
+    return optimized_result.x
 
 # ==========================================
 # 3. REGIME-SWITCHING VOLATILITY MODULE
 # ==========================================
 def analyze_market_regimes(df):
-    print("\n[STEP 3] Initializing Regime-Switching Volatility Analyzer...")
+    print("\n[STEP 3] Running Latent Market State Classification...")
     spy_returns = df['SPY'].pct_change().dropna()
     rolling_vol = spy_returns.rolling(window=21).std() * np.sqrt(252)
     rolling_vol = rolling_vol.dropna()
@@ -95,11 +94,11 @@ def analyze_market_regimes(df):
     regimes = []
     for current_vol in rolling_vol:
         if current_vol <= vol_median:
-            regimes.append("Regime 1: Low Volatility (Equilibrium)")
+            regimes.append("Regime 1: Low Vol (Equilibrium)")
         elif current_vol <= vol_75th:
-            regimes.append("Regime 2: Medium Volatility (Expansion/Transition)")
+            regimes.append("Regime 2: Med Vol (Transition)")
         else:
-            regimes.append("Regime 3: High Volatility (Tail-Risk/Stress State)")
+            regimes.append("Regime 3: High Vol (Tail-Risk)")
             
     regime_df = pd.DataFrame(index=rolling_vol.index)
     regime_df['Rolling_Vol'] = rolling_vol
@@ -109,35 +108,78 @@ def analyze_market_regimes(df):
     latest_state = regime_df['Market_State'].iloc[-1]
     latest_vol_value = regime_df['Rolling_Vol'].iloc[-1]
     
-    print(f"[ANALYSIS ENGINE] Date: {latest_date} | Realized Vol: {latest_vol_value:.2%} | Current Mode: {latest_state}")
+    print(f"[STATE FLAGGED] Date: {latest_date} | Realized Vol: {latest_vol_value:.2%} | Mode: {latest_state}")
+    os.makedirs("output", exist_ok=True)
     regime_df.to_csv("output/market_regime_matrix.csv")
     print("[SUCCESS] Volatility regime matrix saved to output/market_regime_matrix.csv")
+    return regime_df
 
 # ==========================================
-# 4. MASTER PIPELINE COORDINATOR
+# 4. COMPREHENSIVE REGIME-CONDITIONED BACKTESTER
+# ==========================================
+def run_comparative_backtest(prices_df, regime_df, bl_weights):
+    print("\n[STEP 4] Simulating Historical Performance Across Regimes...")
+    returns = prices_df.pct_change().dropna()
+    
+    num_assets = len(prices_df.columns)
+    eq_weights = np.array([1.0 / num_assets] * num_assets)
+    
+    backtest_df = pd.DataFrame(index=returns.index)
+    backtest_df['Benchmark_EQ'] = returns.to_numpy() @ eq_weights
+    backtest_df['Optimized_BL'] = returns.to_numpy() @ bl_weights
+    
+    backtest_df = backtest_df.join(regime_df['Market_State'], how='inner')
+    
+    unique_regimes = sorted(backtest_df['Market_State'].unique())
+    summary_data = []
+    
+    for regime in unique_regimes:
+        regime_data = backtest_df[backtest_df['Market_State'] == regime]
+        if len(regime_data) < 5: continue
+        
+        for strategy in ['Benchmark_EQ', 'Optimized_BL']:
+            strat_returns = regime_data[strategy]
+            
+            ann_ret = strat_returns.mean() * 252
+            ann_vol = strat_returns.std() * np.sqrt(252)
+            sharpe = ann_ret / ann_vol if ann_vol > 0 else 0
+            
+            cum_ret = (1 + strat_returns).cumprod()
+            max_dd = ((cum_ret - cum_ret.cummax()) / cum_ret.cummax()).min()
+            
+            summary_data.append({
+                "Regime": regime,
+                "Strategy": strategy,
+                "Days": len(regime_data),
+                "Ann. Return": f"{ann_ret:.2%}",
+                "Ann. Volatility": f"{ann_vol:.2%}",
+                "Sharpe Ratio": f"{sharpe:.2f}",
+                "Max Drawdown": f"{max_dd:.2%}"
+            })
+            
+    metrics_df = pd.DataFrame(summary_data)
+    print("\n" + "="*70 + "\n EMPIRICAL BACKTEST COMPARISON BY MACRO REGIME\n" + "="*70)
+    print(metrics_df.to_string(index=False))
+    print("="*70)
+    
+    metrics_df.to_csv("output/comparative_regime_backtest.csv", index=False)
+    print("[SUCCESS] Comparative analysis saved to 'output/comparative_regime_backtest.csv'")
+
+# ==========================================
+# 5. MASTER COORDINATOR
 # ==========================================
 if __name__ == "__main__":
     print("==================================================")
-    print("      LAUNCHING MASTER QUANTAMENTAL PIPELINE      ")
+    print("      LAUNCHING ENHANCED QUANTAMENTAL DESK        ")
     print("==================================================")
     
-    # Run Ingestion
     market_data = fetch_market_data()
+    bl_allocation = run_black_litterman(market_data)
+    market_regimes = analyze_market_regimes(market_data)
     
-    # Run Black-Litterman Portfolio Optimization
-    run_black_litterman(market_data)
-    
-    # Run Regime Switching Analysis
-    analyze_market_regimes(market_data)
-    
-    # ==========================================
-    # CORE FORECASTING & LINKEDIN ENGINE PLACEHOLDER
-    # ==========================================
-    print("\n[STEP 4] Executing Deep Learning Forecasting & Post Automation...")
-    # Your original core calculation/post code execution goes right here.
-    # [Keep any existing LinkedIn post or GARCH-LSTM function calls down here]
+    # Run comparative backtest using the optimized parameters
+    run_comparative_backtest(market_data, market_regimes, bl_allocation)
     
     print("\n==================================================")
     print("          PIPELINE EXECUTION COMPLETE             ")
     print("==================================================")
-
