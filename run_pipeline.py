@@ -77,7 +77,7 @@ def run_black_litterman(df):
     })
     weights_df.to_csv("output/bl_optimized_weights.csv", index=False)
     print("[SUCCESS] Optimized weights saved to output/bl_optimized_weights.csv")
-    return optimized_result.x
+    return optimized_result.x, weights_df
 
 # ==========================================
 # 3. REGIME-SWITCHING VOLATILITY MODULE
@@ -166,7 +166,47 @@ def run_comparative_backtest(prices_df, regime_df, bl_weights):
     print("[SUCCESS] Comparative analysis saved to 'output/comparative_regime_backtest.csv'")
 
 # ==========================================
-# 5. MASTER COORDINATOR
+# 5. AUTOMATED MARKET DISPATCH & NEWSLETTER GENERATOR
+# ==========================================
+def generate_daily_newsletter(regime_df, weights_df):
+    print("\n[STEP 5] Generating Automated LinkedIn Content Layer...")
+    
+    latest_date = regime_df.index[-1].strftime('%B %d, %Y')
+    latest_state = regime_df['Market_State'].iloc[-1]
+    latest_vol = regime_df['Rolling_Vol'].iloc[-1]
+    
+    alloc_strings = []
+    for _, row in weights_df.iterrows():
+        if row['Optimal_Weight'] > 0:
+            alloc_strings.append(f"  • {row['Asset']}: {row['Optimal_Weight']:.2%}")
+            
+    post_content = f"""📊 QUANTAMENTAL DESK DAILY DISPATCH | {latest_date}
+
+⚡ SYSTEM STATUS: LATENT REGIME DETECTED
+Current State: {latest_state}
+SPY Rolling Realized Volatility: {latest_vol:.2%}
+
+🤖 BLACK-LITTERMAN BAYESIAN ALLOCATION MATRIX:
+Based on historical asset covariance matrices and momentum-driven view vectors, our optimization engine has refactored the portfolio weights for the upcoming session:
+{chr(10).join(alloc_strings)}
+
+🧠 UNDER THE HOOD:
+Our automated pipeline ingests multi-asset daily data, maps the latent market state using rolling volatility quantiles, and feeds structural returns into a Black-Litterman optimization framework to minimize portfolio variance dynamically across shifting regimes.
+
+💡 CALL FOR COLLABORATION:
+I am currently scaling out the predictive features of this framework (integrating an LSTM-GARCH hybrid model to forecast forward implied volatility surfaces). If any Portfolio Managers, Traders, or Quants have an interesting stress-test scenario, alternative dataset, or specialized strategy backtest they want rigorously modeled or optimized for free, drop a comment or DM me. Let's collaborate.
+
+#QuantitativeFinance #BlackLitterman #PortfolioOptimization #PythonTrading #RiskManagement #DataScience
+"""
+    
+    os.makedirs("output", exist_ok=True)
+    output_text_path = "output/linkedin_post.txt"
+    with open(output_text_path, "w", encoding="utf-8") as f:
+        f.write(post_content)
+    print(f"[SUCCESS] Daily newsletter artifact generated at '{output_text_path}'")
+
+# ==========================================
+# 6. MASTER COORDINATOR
 # ==========================================
 if __name__ == "__main__":
     print("==================================================")
@@ -174,11 +214,14 @@ if __name__ == "__main__":
     print("==================================================")
     
     market_data = fetch_market_data()
-    bl_allocation = run_black_litterman(market_data)
+    bl_allocation, weights_dataframe = run_black_litterman(market_data)
     market_regimes = analyze_market_regimes(market_data)
     
-    # Run comparative backtest using the optimized parameters
+    # Run backtest
     run_comparative_backtest(market_data, market_regimes, bl_allocation)
+    
+    # Generate the newsletter text
+    generate_daily_newsletter(market_regimes, weights_dataframe)
     
     print("\n==================================================")
     print("          PIPELINE EXECUTION COMPLETE             ")
