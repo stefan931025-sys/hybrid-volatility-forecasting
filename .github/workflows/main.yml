@@ -1,13 +1,12 @@
 name: Quantamental Pipeline Automation
 
 on:
-  workflow_dispatch:
   push:
-    branches:
-      - main
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
   schedule:
-    # Triggers automatically at 04:30 UTC (06:30 AM SAST) every single morning
-    - cron: '30 4 * * *'
+    - cron: '0 6 * * 1-5' # Runs at 06:00 UTC (08:00 AM SAST) Monday through Friday
 
 jobs:
   run-pipeline:
@@ -15,24 +14,22 @@ jobs:
 
     steps:
       - name: Checkout Code Repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+        uses: actions/checkout@v3
 
       - name: Configure Cloud Python Environment
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
+          cache: 'pip'
 
       - name: Install Quant & Core Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install numpy pandas scikit-learn tensorflow arch matplotlib requests GitPython yfinance scipy
+          pip install numpy pandas yfinance scipy requests
 
       - name: Execute Automated Ingestion & Analytics Engine
         env:
-          LINKEDIN_OAUTH_TOKEN: ${{ secrets.LINKEDIN_OAUTH_TOKEN }}
-          LINKEDIN_PERSON_URN: ${{ secrets.LINKEDIN_PERSON_URN }}
+          LINKEDIN_ACCESS_TOKEN: ${{ secrets.LINKEDIN_ACCESS_TOKEN }}
         run: |
-          python src/data_ingestion.py
           python run_pipeline.py
+          python publish_linkedin.py
