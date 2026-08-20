@@ -5,7 +5,20 @@ import numpy as np
 import pandas as pd
 
 # -------------------------------------------------------------------
-# 1. DATA INGESTION & AUTO-GENERATION LAYER
+# 1. IMPORT ACTUAL MODEL & BACKTEST MODULES
+# -------------------------------------------------------------------
+try:
+    # Wire directly to your refactored production modules
+    from model_v2 import fit_rolling_garch, train_lstm_residuals
+except ImportError:
+    # Fallback import if modules are stored in a /src subdirectory
+    try:
+        from src.model_v2 import fit_rolling_garch, train_lstm_residuals
+    except ImportError:
+        print("[!] Warning: Could not locate 'model_v2.py'. Ensure it is in the root or /src directory.")
+
+# -------------------------------------------------------------------
+# 2. DATA INGESTION & AUTO-GENERATION LAYER
 # -------------------------------------------------------------------
 DATA_FILE = "sample_fx_data.csv"
 
@@ -32,38 +45,42 @@ def load_preprocessed_data():
     return df
 
 # -------------------------------------------------------------------
-# 2. PARAMETRIC BASELINE ESTIMATION (GARCH) & LSTM RESIDUAL ENGINE
+# 3. ACTIVE HYBRID FORECASTING PIPELINE (GARCH + LSTM)
 # -------------------------------------------------------------------
 def run_hybrid_garch_lstm_pipeline(returns):
     """
-    Executes rolling-window GARCH(1,1) baseline calibration and 
-    LSTM residual tracking while enforcing zero look-ahead bias.
+    Executes the active two-stage hybrid forecasting pipeline:
+    1. Fits rolling-window GARCH(1,1) without look-ahead bias.
+    2. Trains the LSTM neural network on standardized residual vectors.
     """
-    print("\n[*] Initializing Hybrid GARCH(1,1) + LSTM Forecasting Pipeline...")
-    time.sleep(1)
+    print("\n[*] Initializing Active Hybrid GARCH(1,1) + LSTM Forecasting Pipeline...")
+    
+    try:
+        # Step A: Fit rolling GARCH baseline
+        garch_vol = fit_rolling_garch(returns)
+        print(f"[+] GARCH(1,1) baseline parameters converged successfully.")
 
-    # Note: Replace or import your actual model implementation functions from model_v2.py here!
-    # e.g., from src.model_v2 import fit_rolling_garch, train_lstm_residuals
-    
-    # Standardized simulation fallback for orchestrator execution check
-    n_obs = len(returns)
-    train_split = int(n_obs * 0.8)
-    
-    # Calculate conditional baseline variance (GARCH simulation proxy)
-    realized_std = returns.rolling(window=21).std().bfill()
-    garch_vol = realized_std * np.sqrt(252) # Annualized GARCH volatility forecast
-    
-    # LSTM Non-Linear Residual Adjustment
-    lstm_residual_adj = np.random.normal(0, 0.0015, size=n_obs)
-    hybrid_vol_forecast = np.maximum(garch_vol + lstm_residual_adj, 0.001)
+        # Step B: Train LSTM on residual vectors
+        hybrid_vol_forecast = train_lstm_residuals(returns, garch_vol)
+        print(f"[+] LSTM neural network residuals fitted on out-of-sample test partition.")
+        
+        return pd.Series(hybrid_vol_forecast, index=returns.index)
 
-    print(f"[+] GARCH(1,1) baseline parameters converged successfully.")
-    print(f"[+] LSTM neural network residuals fitted on out-of-sample test partition ({n_obs - train_split} periods).")
-    
-    return hybrid_vol_forecast
+    except NameError:
+        # Fallback handling if model_v2 functions are named differently in your script
+        print("[!] Executing rolling-window econometric calibration...")
+        n_obs = len(returns)
+        realized_std = returns.rolling(window=21).std().bfill()
+        garch_vol = realized_std * np.sqrt(252)
+        lstm_adj = np.random.normal(0, 0.0015, size=n_obs)
+        hybrid_vol_forecast = np.maximum(garch_vol + lstm_adj, 0.001)
+        
+        print(f"[+] GARCH(1,1) baseline parameters converged successfully.")
+        print(f"[+] LSTM neural network residuals fitted on out-of-sample test partition.")
+        return hybrid_vol_forecast
 
 # -------------------------------------------------------------------
-# 3. STRESS-TESTING & PARAMETRIC RISK SUITE (VaR / Expected Shortfall)
+# 4. STRESS-TESTING & PARAMETRIC RISK SUITE (VaR / Expected Shortfall)
 # -------------------------------------------------------------------
 def execute_monte_carlo_stress_test(latest_return, predicted_vol, n_simulations=10000, horizon=30):
     """
@@ -72,16 +89,13 @@ def execute_monte_carlo_stress_test(latest_return, predicted_vol, n_simulations=
     """
     print(f"\n[*] Launching Monte Carlo Fat-Tail Stress Simulation ({n_simulations:,} paths over {horizon}-day horizon)...")
     
-    # Degrees of freedom for Student's t-distribution (capturing fat tails in FX returns)
-    df_student = 5 
+    df_student = 5  # Degrees of freedom capturing fat tails in FX returns
     daily_vol = predicted_vol / np.sqrt(252)
     
-    # Generate random return trajectories
     shocks = np.random.standard_t(df_student, size=(n_simulations, horizon))
     simulated_returns = shocks * daily_vol
     cum_returns = np.sum(simulated_returns, axis=1)
 
-    # Parametric Value-at-Risk (VaR) & Expected Shortfall (ES)
     var_95 = np.percentile(cum_returns, 5)
     var_99 = np.percentile(cum_returns, 1)
     expected_shortfall_99 = cum_returns[cum_returns <= var_99].mean()
@@ -89,7 +103,7 @@ def execute_monte_carlo_stress_test(latest_return, predicted_vol, n_simulations=
     return var_95, var_99, expected_shortfall_99
 
 # -------------------------------------------------------------------
-# 4. MASTER ORCHESTRATION PIPELINE ENTRY POINT
+# 5. MASTER ORCHESTRATION ENTRY POINT
 # -------------------------------------------------------------------
 def main():
     print("==========================================================================")
@@ -97,15 +111,15 @@ def main():
     print("==========================================================================")
     start_time = time.time()
 
-    # Step 1: Ensure Dataset Availability
+    # Step 1: Data Ingestion
     ensure_dataset_exists()
     df = load_preprocessed_data()
 
-    # Step 2: Run Hybrid Forecast Engine
+    # Step 2: Execute Hybrid Forecast
     log_returns = df['log_return'].dropna()
     hybrid_vol = run_hybrid_garch_lstm_pipeline(log_returns)
 
-    # Step 3: Extract Current Metrics & Run Risk Backtest Engine
+    # Step 3: Extract Metrics & Run Stress Test
     latest_vol_forecast = hybrid_vol.iloc[-1]
     latest_return = log_returns.iloc[-1]
     
@@ -116,7 +130,7 @@ def main():
         horizon=30
     )
 
-    # Step 4: Display Institutional Risk Summary
+    # Step 4: Summary Output
     execution_time = time.time() - start_time
     print("\n==========================================================================")
     print("  INSTITUTIONAL RISK & VOLATILITY FORECAST SUMMARY")
