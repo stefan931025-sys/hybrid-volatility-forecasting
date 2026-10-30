@@ -43,4 +43,4 @@ jobs:
       - name: Run Pytest Suite (Safe Discovery)
         run: |
           export PYTHONPATH=src:.
-          pytest -v --tb=short || echo "No test directory found; skipping unit tests."
+          if [ -d "tests" ]; then pytest -v --tb=short; else echo "No tests directory found, skipping unit tests safely."; exit 0; fi
