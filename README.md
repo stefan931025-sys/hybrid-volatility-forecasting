@@ -20,7 +20,7 @@ This repository was systematically updated to transition the core forecasting pi
 
 ### 3. Integration of Parametric Risk Backtesting Engine (`backtest_engine.py`)
 To validate the predictive power of the refactored hybrid model, a formal risk management suite was integrated to translate volatility forecasts into actionable metrics:
-* **Parametric VaR:** Generates daily 95% and 99% Parametric Value at Risk thresholds using dynamic predicted conditional standard deviations ($\hat{\sigma}_{t+1}$).
+* **Parametric VaR:** Generates daily 95% and 99% Parametric Value at Risk thresholds using dynamic predicted conditional standard deviations ($\hat{\sigma}_{t}$).
 * **Regulatory Backtesting:** Establishes the mathematical baseline for regulatory backtesting (Kupiec Proportion of Failures coverage test) to analyze the frequency and independence of VaR exceptions during market stress.
 
 ---
@@ -33,15 +33,15 @@ $$\sigma_t^2 = \omega + \alpha \varepsilon_{t-1}^2 + \beta \sigma_{t-1}^2 \quad 
 
 ### 2. Hybrid LSTM Signal Fusion & Forecast
 
-$$\hat{\sigma}_{t+1} = \Phi_{\text{LSTM}}\left(\sigma_t^2, r_t, r_{t-1}, \dots; \theta\right)$$
+$$\hat{\sigma}_{t+1} = \Phi_{\text{LSTM}}(\sigma_t^2, \mathcal{F}_t, \dots, \theta)$$
 
 ### 3. Parametric Value at Risk (VaR) & Kupiec POF Test
 
 $$\text{VaR}_{\alpha, t} = \mu_t + z_{\alpha} \hat{\sigma}_{t+1}$$
 
-$$\text{LR}_{\text{POF}} = -2 \ln \left[ \frac{(1 - p)^{T - N} p^N}{\left(1 - \frac{N}{T}\right)^{T - N} \left(\frac{N}{T}\right)^N} \right] \sim \chi^2(1)$$
+$$\text{LR}_{\text{POF}} = -2 \ln \left[ \frac{(1-p)^{N-x} p^x}{(1-\hat{p})^{N-x} \hat{p}^x} \right] \sim \chi^2(1)$$
 
-Where $T$ is the total backtest observations, $N$ is the number of VaR exceptions, and $p$ is the theoretical failure probability ($1 - \text{confidence level}$).
+Where $N$ is the total backtest observations, $x$ is the number of VaR exceptions, and $p$ is the theoretical failure probability ($1 - \text{confidence level}$).
 
 ---
 
@@ -51,4 +51,12 @@ Where $T$ is the total backtest observations, $N$ is the number of VaR exception
 hybrid-volatility-forecasting/
 ├── .github/
 │   └── workflows/
-│       └── ci.yml                 # GitHub Actions automated
+│       └── ci.yml             # GitHub Actions automated test workflow
+├── src/                       # Core source modules & optimizer scripts
+├── backtest_engine.py         # Parametric risk backtesting & Kupiec POF suite
+├── model_main.py              # Legacy uncalibrated model pipeline
+├── model_v2.py                # Production-refactored rolling calibration model
+├── repo_auditor.py            # Static AST analysis governance tool
+├── requirements.txt           # Python dependencies
+├── run_pipeline.py            # Execution pipeline entrypoint
+└── README.md                  # System documentation
